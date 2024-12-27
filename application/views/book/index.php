@@ -82,6 +82,7 @@
                                 <select name="category" id="category" class="form-control">
                                     <option value="">- Pilih Kategori -</option>
                                     <?php
+                                    var_dump($category);
                                     foreach ($category as $row):
                                         echo "<option value='$row->category_id'>$row->category_name</option>";
                                     endforeach;
