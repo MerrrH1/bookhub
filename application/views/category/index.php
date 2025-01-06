@@ -1,3 +1,6 @@
+<?php require_once APPPATH . 'helpers/auth_helper.php';
+is_logged_in(); ?>
+
 <div class="col-md-12">
     <div class="row">
         <div class="box box-danger">

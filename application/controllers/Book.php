@@ -8,6 +8,7 @@ class Book extends CI_Controller
         $this->load->model('mBook');
         $this->load->model('mCategory');
         $this->load->library('form_validation');
+        is_logged_in();
     }
 
     public function index()

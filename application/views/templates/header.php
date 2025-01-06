@@ -1,3 +1,7 @@
+<?php if (!$this->session->userdata('user_id')) {
+    header('Location: ' . base_url('auth/login'));
+    exit;
+} ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,15 +32,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link" aria-current="page" href="<?= base_url(); ?>">Buku</a>
+                    <a href="<?= base_url() ?>" class="nav-link">Dashboard</a>
+                    <a class="nav-link" href="#">Member</a>
+                    <a class="nav-link" href="<?= base_url(); ?>">Buku</a>
+                    <a class="nav-link" href=<?= base_url('category'); ?>>Kategori</a>
                     <a class="nav-link" href="#">Peminjaman</a>
                     <a class="nav-link" href="#">Ulasan</a>
-                    <a class="nav-link" href=<?= base_url('category'); ?>>Kategori</a>
-                    <a class="nav-link" href="#">Member</a>
                 </div>
             </div>
             <div class="d-flex">
-                <!-- Login -->
+                <a href="<?= base_url('auth/logout'); ?>" class="btn btn-success">Logout</a>
             </div>
         </div>
     </nav>

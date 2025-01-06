@@ -1,3 +1,11 @@
+<?php require_once APPPATH . 'helpers/auth_helper.php';
+is_logged_in(); 
+
+$user_id = $this->session->userdata('l');
+var_dump($user_id);
+
+?>
+
 <div class="col-md-12">
     <div class="row">
         <div class="box box-danger">
