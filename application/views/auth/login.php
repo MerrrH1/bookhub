@@ -1,6 +1,3 @@
-<?= validation_errors(); ?>
-<?= $this->session->flashdata('error'); ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,27 +20,34 @@
 
 <body>
     <div class="d-flex align-items-center vh-100">
-        <div class="container col-md-6">
+        <div class="container col-md-5 shadow p-3 mb-5 bg-body-tertiary rounded">
             <form action="<?= base_url('auth/login') ?>" method="post">
-                <h4 class="text-center">Login</h4>
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username"
-                        class="form-control <?= form_error('username') ? 'is-invalid' : '' ?>">
-                    <?= form_error('username', '<div class="invalid-feedback">', '</div>'); ?>
-                </div>
+                <h4 class="text-center mb-4">Login</h4>
+                <div class="container mt-3">
+                    <?php if ($this->session->flashdata('error')) {
+                        echo '<div class="alert alert-danger">' . $this->session->flashdata('error') . '</div>';
+                        $this->session->unset_userdata('error');
+                    } ?>
 
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" name="password" id="password"
-                        class="form-control <?= form_error('password') ? 'is-invalid' : '' ?>">
-                    <?= form_error('password', '<div class="invalid-feedback">', '</div>'); ?>
-                </div>
+                    <div class="form-group mb-3">
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username"
+                            class="form-control <?= form_error('username') ? 'is-invalid' : '' ?>"
+                            placeholder="Enter Username">
+                    </div>
 
-                <button type="submit" class="btn btn-primary my-4">Login</button>
+                    <div class="form-group mb-3">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password"
+                            class="form-control <?= form_error('password') ? 'is-invalid' : '' ?>"
+                            placeholder="Enter Password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+
+
+                </div>
             </form>
-        </div>
-    </div>
 </body>
 
 </html>

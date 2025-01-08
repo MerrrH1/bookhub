@@ -7,12 +7,14 @@ class Book extends CI_Controller
         parent::__construct();
         $this->load->model('mBook');
         $this->load->model('mCategory');
+        $this->load->model('mLoan');
         $this->load->library('form_validation');
         is_logged_in();
     }
 
     public function index()
     {
+        $data['book'] = $this->mBook->getData();
         $data['title'] = "Halaman Buku";
         $data['category'] = $this->mCategory->getData();
         $this->load->view('templates/header', $data);
@@ -29,7 +31,7 @@ class Book extends CI_Controller
     public function showDataById()
     {
         $book_id = $this->input->post('book_id');
-        $data = $this->mBook->getDataById($book_id);
+        $data = $this->mBook->getBookById($book_id);
         echo json_encode($data);
     }
 
@@ -40,7 +42,6 @@ class Book extends CI_Controller
         $this->form_validation->set_rules('publisher', 'Penerbit', 'required');
         $this->form_validation->set_rules('category', 'Kategori', 'required');
         $this->form_validation->set_rules('year', 'Tahun Terbit', 'required');
-        $this->form_validation->set_rules('isbn', 'ISBN', 'required');
         $this->form_validation->set_rules('quantity', 'Quantity', 'required');
         $this->form_validation->set_error_delimiters('<p class="text-danger">', '</p>');
 
@@ -59,9 +60,7 @@ class Book extends CI_Controller
                     'publisher' => $this->input->post('publisher'),
                     'year' => $this->input->post('year'),
                     'isbn' => $this->input->post('isbn'),
-                    'quantity' => $this->input->post('quantity'),
-                    'created_at' => date('Y-m-d h:i:s'),
-                    'last_modified' => date('Y-m-d h:i:s'),
+                    'quantity' => $this->input->post('quantity')
                 );
                 $data = $this->security->xss_clean($data);
                 $response = $this->mBook->insertData($data) ?
@@ -94,8 +93,7 @@ class Book extends CI_Controller
                 'publisher' => $this->input->post('publisher'),
                 'year' => $this->input->post('year'),
                 'isbn' => $this->input->post('isbn'),
-                'quantity' => $this->input->post('quantity'),
-                'last_modified' => date('Y-m-d h:i:s'),
+                'quantity' => $this->input->post('quantity')
             );
             $data = $this->security->xss_clean($data);
             $response = $this->mBook->updateData($book_id, $data) ?
@@ -117,6 +115,45 @@ class Book extends CI_Controller
             echo "No direct script access allowed";
         }
     }
+
+    public function pinjamBuku()
+{
+    if ($this->input->is_ajax_request()) {
+        $book_id = $this->input->post('book_id');
+        if ($book_id) {
+            // Check if the book exists and is available for loan
+            if (!$this->mLoan->isBookAvailable($book_id)) {
+                $response = array('response' => 'error', 'message' => 'Buku tidak tersedia untuk dipinjam');
+                echo json_encode($response);
+                return;
+            }
+
+            $this->db->trans_start();
+            $data = [
+                'user_id' => $this->session->userdata('user_id'),
+                'loan_date' => date('Y-m-d H:i:s'),
+                'return_date' => NULL
+            ];
+            $this->mLoan->addLoan($data);
+            $dataDetail = [
+                'loan_id' => $this->db->insert_id(),
+                'book_id' => $book_id
+            ];
+            $this->mLoan->addLoanDetail($dataDetail);
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                log_message('error', 'Loan transaction failed: ' . $this->db->last_query());
+                $response = array('response' => 'error', 'message' => 'Gagal memproses peminjaman');
+            } else {
+                $response = array('response' => 'success', 'message' => 'Buku berhasil dipinjam');
+            }
+        } else {
+            $response = array('response' => 'error', 'message' => 'Buku belum dipilih', 'id' => $book_id);
+        }
+        echo json_encode($response);
+    }
 }
 
+}
 ?>

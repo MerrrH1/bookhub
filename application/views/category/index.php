@@ -115,7 +115,7 @@ is_logged_in(); ?>
             var category_id = $(this).attr('edit-id');
             editMode = true;
             $.ajax({
-                url: 'category/showDataById',
+                url: '<?= base_url("category/showDataById");?>',
                 type: 'POST',
                 dataType: 'JSON',
                 data: { category_id: category_id },

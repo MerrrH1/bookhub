@@ -8,7 +8,7 @@ class mBook extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function getDataById($id) {
+    public function getBookById($id) {
         $this->db->where('book_id', $id);
         return $this->db->get('book')->row();
     }
@@ -32,6 +32,7 @@ class mBook extends CI_Model {
         $query = $this->db->get('book');
         return $query->num_rows();
     }
+
 }
 
 ?>

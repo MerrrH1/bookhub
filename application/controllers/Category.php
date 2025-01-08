@@ -44,9 +44,7 @@ class Category extends CI_Controller
                 $response = array('responce' => 'error', 'message' => 'Kategori Sudah Terdaftar..');
             } else {
                 $data = array(
-                    'category_name' => $this->input->post('category_name'),
-                    'created_at' => date('Y-m-d h:i:s'),
-                    'last_modified' => date('Y-m-d h:i:s'),
+                    'category_name' => $this->input->post('category_name')
                 );
                 $data = $this->security->xss_clean($data);
                 $response = $this->mCategory->insertData($data) ?
@@ -67,8 +65,7 @@ class Category extends CI_Controller
         } else {
             $category_id = $this->input->post('category_id');
             $data = array(
-                'category_name' => $this->input->post('category_name'),
-                'last_modified' => date('Y-m-d h:i:s'),
+                'category_name' => $this->input->post('category_name')
             );
             $data = $this->security->xss_clean($data);
             $response = $this->mCategory->updateData($category_id, $data) ?

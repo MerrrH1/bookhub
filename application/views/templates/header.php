@@ -14,7 +14,6 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css">
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
@@ -33,14 +32,18 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a href="<?= base_url() ?>" class="nav-link">Dashboard</a>
-                    <a class="nav-link" href="#">Member</a>
-                    <a class="nav-link" href="<?= base_url(); ?>">Buku</a>
+                    <a class="nav-link" href="<?= base_url('book'); ?>">Buku</a>
                     <a class="nav-link" href=<?= base_url('category'); ?>>Kategori</a>
-                    <a class="nav-link" href="#">Peminjaman</a>
-                    <a class="nav-link" href="#">Ulasan</a>
+                    <a class="nav-link" href="<?= base_url('loan'); ?>">Peminjaman</a>
+                    <?php if ($this->session->userdata("role") == "admin") {
+                        echo '<a class="nav-link" href="#">Member</a>
+                        <a class="nav-link" href="#">Ulasan</a>';
+                    } ?>
                 </div>
             </div>
             <div class="d-flex">
+                <input type="hidden" name="user_id" id="user_id" value="<?= $this->session->userdata('user_id'); ?>">
+                <input type="hidden" name="role" id="role" value="<?= $this->session->userdata('role'); ?>">
                 <a href="<?= base_url('auth/logout'); ?>" class="btn btn-success">Logout</a>
             </div>
         </div>

@@ -1,6 +1,13 @@
 <?php 
 
 class mUser extends CI_Model {
+    public function getMember() {
+        $this->db->select('*');
+        $this->db->from('user');
+        $this->db->where('role', 'member');
+        return $this->db->get()->result();
+    }
+
     public function get_user($username) {
         $this->db->where('username', $username);
         return $this->db->get('user')->row();

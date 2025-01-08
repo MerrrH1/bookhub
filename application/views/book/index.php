@@ -1,11 +1,3 @@
-<?php require_once APPPATH . 'helpers/auth_helper.php';
-is_logged_in(); 
-
-$user_id = $this->session->userdata('l');
-var_dump($user_id);
-
-?>
-
 <div class="col-md-12">
     <div class="row">
         <div class="box box-danger">
@@ -15,33 +7,14 @@ var_dump($user_id);
                     <a class="btn btn-default btn-sm" href="<?php echo base_url('book'); ?>">
                         <span class="fa fa-refresh"></span> Refresh
                     </a>
-                    <button type="button" class="btn btn-sm btn-success btnTambah" id="btnTambah">
-                        <span class="fa fa-plus"></span> Tambah
-                    </button>
+                    <?php if ($this->session->userdata('role') == "admin") {
+                        echo '<button type="button" class="btn btn-sm btn-success btnTambah" id="btnTambah">' .
+                            '<span class="fa fa-plus"></span> Tambah
+                    </button>';
+                    } ?>
                 </div>
             </div>
-            <div class="box-body my-3">
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered table-condensed text-center" id="mydata">
-                            <thead>
-                                <tr>
-                                    <th style='width:30px;text-align: center;'>#No</th>
-                                    <th>Judul Buku</th>
-                                    <th>Ketegori</th>
-                                    <th>Penulis</th>
-                                    <th>Penerbit</th>
-                                    <th>Tahun</th>
-                                    <th>ISBN</th>
-                                    <th>Qty</th>
-                                    <th style='width:120px;text-align: center;'>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl_data">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4 mt-2" id="data-card">
             </div>
         </div>
     </div>
@@ -138,33 +111,49 @@ var_dump($user_id);
         showData();
 
         function showData() {
+            var role = $('#role').val();
             $.ajax({
                 url: '<?= base_url('book/showData'); ?>',
                 type: 'POST',
                 dataType: 'JSON',
                 success: function (response) {
-                    var i;
-                    var no = 0;
                     var html = "";
 
                     for (i = 0; i < response.length; i++) {
-                        html = html +
-                            "<tr>" +
-                            "<td>" + ++no + "</td>" +
-                            "<td>" + response[i].title + "</td>" +
-                            "<td>" + response[i].category_name + "</td>" +
-                            "<td>" + response[i].author + "</td>" +
-                            "<td>" + response[i].publisher + "</td>" +
-                            "<td>" + response[i].year + "</td>" +
-                            "<td>" + response[i].isbn + "</td>" +
-                            "<td>" + response[i].quantity + "</td>" +
-                            "<td><center><span>" + "<button edit-id='" + response[i].book_id + "' class='btn btn-primary btn_xs btn_edit'><i class='fa fa-edit'></i> Edit</button>" +
-                            "<button class='ms-2 btn btn-danger btn_xs btn_hapus' data-id='" + response[i].book_id + "'<i class='fa fa-trash'></i> Hapus</button>"
-                        "</span></center></td>" +
-                            "</tr>";
+                        var item = response[i];
+                        html += `
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${item.title}</h5>
+                                    <p class="card-text">
+                                        Tahun Terbit: ${item.year}<br>
+                                        Kategori: ${item.category_name}<br>
+                                        Penulis: ${item.author}<br>
+                                        Penerbit: ${item.publisher}<br>
+                                        ISBN: ${item.isbn}
+                                    </p>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <small class="text-body-secondary">Stok: ${item.quantity}</small>
+                                    <div class="btn-group" role="group"><form method="post"><input type="hidden" name="book_id" id="book_id" value="${item.book_id}"></form>`;
+
+                        if (role == "member") {
+                            html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" data-id="${item.book_id}">Pinjam Buku</button>`;
+                        } else if (role == 'admin') {
+                            html += `
+                            <button type="button" class="btn btn-sm btn-primary btn_edit" edit-id="${item.book_id}">Edit</button>
+                            <button type="button" class="btn btn-sm btn-danger btn_hapus" data-id="${item.book_id}">Hapus</button>
+                        `;
+                        }
+
+                        html += `</div>
+                                </div>
+                            </div>
+                        </div>`;
                     }
-                    $('#tbl_data').html(html);
-                    $('#mydata').DataTable();
+
+                    $('#data-card').html(html);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert(xhr.status);
@@ -244,8 +233,9 @@ var_dump($user_id);
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        $('#mydata').DataTable().destroy();
-                        showData();
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
                     } else {
                         Swal.fire('Error!', 'Ops! <br>' + data.message, 'error');
                     }
@@ -253,7 +243,7 @@ var_dump($user_id);
             });
         });
 
-        $('#tbl_data').on('click', '.btn_hapus', function (e) {
+        $(document).on('click', '.btn_hapus', function (e) {
             e.preventDefault();
             var book_id = $(this).attr('data-id');
             Swal.fire({
@@ -291,10 +281,46 @@ var_dump($user_id);
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    $('#mydata').DataTable().destroy();
                     showData();
                 }
             });
         });
+
+        $(document).on('click', '.btn_pinjam', function (e) {
+            e.preventDefault();
+            var book_id = $(this).attr('data-id');
+            $.ajax({
+                url: '<?php echo base_url("loan/simpanBuku"); ?>',
+                type: 'post',
+                data: { book_id: book_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.response == "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        showData();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message,
+                            showConfirmButton: true
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan',
+                        text: thrownError
+                    });
+                }
+            });
+        });
+
     });
+
 </script>
