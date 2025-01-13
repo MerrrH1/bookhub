@@ -1,0 +1,19 @@
+CREATE DATABASE bookhub;
+CREATE TABLE category(`category_id` INT PRIMARY KEY AUTO_INCREMENT, `category_name` VARCHAR(255))  ENGINE = InnoDB;;
+CREATE TABLE `bookhub`.`book` (`book_id` INT NOT NULL AUTO_INCREMENT , `title` VARCHAR(255) NOT NULL , `category_id` INT NOT NULL, `author` VARCHAR(255) NOT NULL , `publisher` VARCHAR(255) NOT NULL , `year` YEAR NOT NULL , `quantity` INT NOT NULL , PRIMARY KEY (`book_id`))  ENGINE = InnoDB;
+ALTER TABLE `book` ADD FOREIGN KEY (`category_id`) REFERENCES `category`(`category_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+CREATE TABLE `user` (`user_id` INT AUTO_INCREMENT PRIMARY KEY NOT NULL, `first_name` VARCHAR(255) NOT NULL, `last_name` VARCHAR(255) NOT NULL, `username` VARCHAR(255), `password` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL, `role` VARCHAR(255) NOT NULL) ENGINE = InnoDB;
+CREATE TABLE `bookhub`.`loan` (`loan_id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , `book_id` INT NOT NULL , `status` ENUM('pending','borrowed','returned','canceled') NOT NULL DEFAULT 'pending' , `loan_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, `return_date` DATETIME NULL , PRIMARY KEY (`loan_id`)) ENGINE = InnoDB;
+ALTER TABLE `loan` ADD FOREIGN KEY (`book_id`) REFERENCES `book`(`book_id`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `loan` ADD FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+
+INSERT INTO category VALUES (NULL, 'Novel');
+INSERT INTO category VALUES (NULL, 'Fiksi');
+INSERT INTO category VALUES (NULL, 'Komik');
+INSERT INTO category VALUES (NULL, 'Romantis');
+INSERT INTO category VALUES (NULL, 'Sejarah');
+INSERT INTO category VALUES (NULL, 'Ilmiah');
+
+INSERT INTO `book` (`book_id`, `title`, `category_id`, `author`, `publisher`, `year`, `quantity`) VALUES (NULL, 'Harry Potter', '2', 'J.K. Rowling', 'Bloomsbury', '1997', '17')
+INSERT INTO `book` (`book_id`, `title`, `category_id`, `author`, `publisher`, `year`, `quantity`) VALUES (NULL, 'Filosofi Kopi', '1', 'Dewi Lestari', 'Bentang Pustaka', '2006', '11')
