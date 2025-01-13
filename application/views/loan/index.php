@@ -83,7 +83,7 @@
                                   <td>${response[i].title}</td>
                                   <td>${response[i].loan_date ? new Date(response[i].loan_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td>${response[i].return_date ? new Date(response[i].return_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
-                                  <td></td>
+                                  <td>${response[i].fine_amount ? Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', minimumFractionDigits: 0}).format(response[i].fine_amount) : ""}</td>
                                   <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}</td>
                                   <td>${response[i].status === "pending" ? `<button class="btn btn-danger btn_batal" data-id="${response[i].loan_id}">Batal</button>` : response[i].status === "borrowed" ? `<button class='btn btn-primary btn_kembali' data-id='${response[i].loan_id}'>Kembalikan Buku</button>` : ""}</td>
                                 </tr>`;

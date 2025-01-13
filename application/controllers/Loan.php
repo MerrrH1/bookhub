@@ -30,7 +30,7 @@ class Loan extends CI_Controller
     public function showDataByUser()
     {
         $data = $this->mLoan->getLoanByUser($this->session->userdata('user_id'));
-        echo json_encode($data);
+        echo json_encode($data, JSON_PRETTY_PRINT);
     }
 
     public function confirmLoan()

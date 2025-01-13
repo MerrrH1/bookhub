@@ -8,6 +8,7 @@ class mLoan extends CI_Model
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
         $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
+        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left');
         $query = $this->db->get();
         return $query->result();
     }
@@ -17,6 +18,7 @@ class mLoan extends CI_Model
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
         $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
+        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left');
         $this->db->where('loan.user_id', $user_id);
         $query = $this->db->get();
         return $query->result();
