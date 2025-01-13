@@ -32,7 +32,6 @@ class mBook extends CI_Model {
         $query = $this->db->get('book');
         return $query->num_rows();
     }
-
 }
 
 ?>

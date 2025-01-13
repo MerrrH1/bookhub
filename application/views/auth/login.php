@@ -44,10 +44,13 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">Login</button>
-
-
                 </div>
             </form>
+            <div class="text-right mx-3 mt-3">
+                <p>Belum Punya Akun?<span><a href="<?= base_url('auth/register'); ?>" class="nav-link text-primary">Daftar</a></span></p>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

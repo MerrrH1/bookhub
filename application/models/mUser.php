@@ -17,6 +17,16 @@ class mUser extends CI_Model {
         $this->db->where('user_id', $id);
         return $this->db->get('user')->row();
     }
+
+    public function checkDuplicate($username) {
+        $this->db->where('username', $username);
+        $query = $this->db->get('user');
+        return $query->num_rows() > 0;
+    }
+
+    public function register($data) {
+        return $this->db->insert('user', $data);
+    }
 }
 
 ?>

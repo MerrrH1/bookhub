@@ -33,11 +33,11 @@
                 <div class="navbar-nav">
                     <a href="<?= base_url() ?>" class="nav-link">Dashboard</a>
                     <a class="nav-link" href="<?= base_url('book'); ?>">Buku</a>
-                    <a class="nav-link" href=<?= base_url('category'); ?>>Kategori</a>
                     <a class="nav-link" href="<?= base_url('loan'); ?>">Peminjaman</a>
                     <?php if ($this->session->userdata("role") == "admin") {
-                        echo '<a class="nav-link" href="#">Member</a>
-                        <a class="nav-link" href="#">Ulasan</a>';
+                        echo '<a class="nav-link" href="' . base_url('category') . '">Kategori</a>
+                        <a class="nav-link" href="#">Member</a>
+                        <a class="nav-link" href="' . base_url('fine') . '">Denda</a>';
                     } ?>
                 </div>
             </div>

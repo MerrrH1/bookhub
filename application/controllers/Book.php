@@ -116,44 +116,30 @@ class Book extends CI_Controller
         }
     }
 
-    public function pinjamBuku()
-{
-    if ($this->input->is_ajax_request()) {
-        $book_id = $this->input->post('book_id');
-        if ($book_id) {
-            // Check if the book exists and is available for loan
-            if (!$this->mLoan->isBookAvailable($book_id)) {
-                $response = array('response' => 'error', 'message' => 'Buku tidak tersedia untuk dipinjam');
-                echo json_encode($response);
-                return;
-            }
-
-            $this->db->trans_start();
-            $data = [
-                'user_id' => $this->session->userdata('user_id'),
-                'loan_date' => date('Y-m-d H:i:s'),
-                'return_date' => NULL
-            ];
-            $this->mLoan->addLoan($data);
-            $dataDetail = [
-                'loan_id' => $this->db->insert_id(),
-                'book_id' => $book_id
-            ];
-            $this->mLoan->addLoanDetail($dataDetail);
-            $this->db->trans_complete();
-
-            if ($this->db->trans_status() === FALSE) {
-                log_message('error', 'Loan transaction failed: ' . $this->db->last_query());
-                $response = array('response' => 'error', 'message' => 'Gagal memproses peminjaman');
+    public function pinjamBuku() {
+        if($this->input->is_ajax_request()) {
+            $book_id = $this->input->post('book_id');
+            if(!$book_id) {
+                $response = array('response' => 'error', 'message' => 'Buku belum dipilih...');
             } else {
-                $response = array('response' => 'success', 'message' => 'Buku berhasil dipinjam');
+                $data = array(
+                    'user_id' => $this->session->userdata('user_id'),
+                    'book_id' => $book_id,
+                    'status' => 'pending',
+                    'loan_date' => NULL,
+                    'return_date' => NULL
+                );
+                if($this->mLoan->addLoan($data)) {
+                    $response = array('response' => 'success', 'message' => 'Buku berhasil dipinjam', 'misc' => 'Sedang menunggu konfirmasi...');
+                } else {
+                    $response = array('response' => 'error', 'message' => 'Buku gagal dipinjam...');
+                }
             }
         } else {
-            $response = array('response' => 'error', 'message' => 'Buku belum dipilih', 'id' => $book_id);
+            $response = array('response' => 'error', 'message' => 'Anda tidak memiliki akses...');
         }
         echo json_encode($response);
     }
-}
 
 }
 ?>

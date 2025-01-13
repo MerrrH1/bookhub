@@ -41,6 +41,22 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="">Kategori</label>
+                                <select name="category" id="category" class="form-control">
+                                    <option value="">- Pilih Kategori -</option>
+                                    <?php
+                                    var_dump($category);
+                                    foreach ($category as $row):
+                                        echo "<option value='$row->category_id'>$row->category_name</option>";
+                                    endforeach;
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="">Penulis</label>
@@ -59,32 +75,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Kategori</label>
-                                <select name="category" id="category" class="form-control">
-                                    <option value="">- Pilih Kategori -</option>
-                                    <?php
-                                    var_dump($category);
-                                    foreach ($category as $row):
-                                        echo "<option value='$row->category_id'>$row->category_name</option>";
-                                    endforeach;
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label for="">Tahun Terbit</label>
                                 <input type="text" name="year" class="form-control input-sm" id="year"
                                     placeholder="Tahun Terbit Buku...">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="">ISBN</label>
-                                <input type="text" name="isbn" class="form-control input-sm" id="isbn"
-                                    placeholder="ISBN Buku...">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -131,7 +124,6 @@
                                         Kategori: ${item.category_name}<br>
                                         Penulis: ${item.author}<br>
                                         Penerbit: ${item.publisher}<br>
-                                        ISBN: ${item.isbn}
                                     </p>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between">
@@ -139,7 +131,7 @@
                                     <div class="btn-group" role="group"><form method="post"><input type="hidden" name="book_id" id="book_id" value="${item.book_id}"></form>`;
 
                         if (role == "member") {
-                            html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" data-id="${item.book_id}">Pinjam Buku</button>`;
+                            html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" stok=${item.quantity} data-id="${item.book_id}">Pinjam Buku</button>`;
                         } else if (role == 'admin') {
                             html += `
                             <button type="button" class="btn btn-sm btn-primary btn_edit" edit-id="${item.book_id}">Edit</button>
@@ -190,7 +182,6 @@
                     $('#category option[value=' + response.category_id + ']').attr('selected', 'selected');
                     $('input[name="author"]').val(response.author);
                     $('input[name="publisher"]').val(response.publisher);
-                    $('input[name="isbn"]').val(response.isbn);
                     $('input[name="year"]').val(response.year);
                     $('input[name="quantity"]').val(response.quantity);
                     $('#formModal').modal('show');
@@ -233,9 +224,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1500);
+                        showData();
                     } else {
                         Swal.fire('Error!', 'Ops! <br>' + data.message, 'error');
                     }
@@ -290,7 +279,7 @@
             e.preventDefault();
             var book_id = $(this).attr('data-id');
             $.ajax({
-                url: '<?php echo base_url("loan/simpanBuku"); ?>',
+                url: '<?php echo base_url("book/pinjamBuku"); ?>',
                 type: 'post',
                 data: { book_id: book_id },
                 dataType: 'json',
@@ -299,15 +288,12 @@
                         Swal.fire({
                             icon: 'success',
                             title: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
+                            text: response.misc
                         });
-                        showData();
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: response.message,
-                            showConfirmButton: true
+                            title: response.message
                         });
                     }
                 },

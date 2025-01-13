@@ -7,6 +7,7 @@ class Category extends CI_Controller
         parent::__construct();
         $this->load->model('mCategory');
         is_logged_in();
+        check_admin();
     }
 
     public function index()

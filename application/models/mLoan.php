@@ -2,22 +2,29 @@
 
 class mLoan extends CI_Model
 {
-    public function getData()
+    public function getLoan()
     {
-        $this->db->get('l.*, u.username, b.title');
-        $this->db->from('loan l');
-        $this->db->join('book b', 'b.book_id = l.book_id', 'inner');
-        $this->db->join('user u', 'u.user_id = l.user_id', 'inner');
-        return $this->db->get()->result();
+        $this->db->select('*');
+        $this->db->from('loan');
+        $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
+        $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function getLoanByUser($user_id) {
+        $this->db->select('*');
+        $this->db->from('loan');
+        $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
+        $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
+        $this->db->where('loan.user_id', $user_id);
+        $query = $this->db->get();
+        return $query->result();
     }
 
     public function addLoan($data)
     {
         return $this->db->insert('loan', $data);
-    }
-    public function addLoanDetail($data)
-    {
-        return $this->db->insert('loan_detail', $data);
     }
 
     public function isBookAvailable($book_id)
@@ -33,19 +40,9 @@ class mLoan extends CI_Model
         return false;
     }
 
-    public function saveTrans($data, $dataDetail) {
-        $this->db->trans_strict(TRUE);
-        $this->db->trans_start();
-        $this->db->insert('loan', $data);
-        $this->db->insert('loan_detail', $dataDetail);
-        $this->db->trans_complete();
-        if($this->db->trans_status() === FALSE) {
-            $this->db->trans_rollback();
-            return FALSE;
-        } else {
-            $this->db->trans_commit();
-            return TRUE;
-        }
+    public function updateLoan($loan_id, $data) {
+        $this->db->where('loan_id', $loan_id);
+        return $this->db->update('loan', $data);
     }
 }
 

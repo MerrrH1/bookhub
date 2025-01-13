@@ -23,7 +23,7 @@ is_logged_in(); ?>
                                 <tr>
                                     <th style='width:30px;text-align: center;'>#No</th>
                                     <th>Nama Ketegori</th>
-                                    <th style='width:120px;text-align: center;'>Aksi</th>
+                                    <th style='width:200px;text-align: center;'>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tbl_data">
@@ -92,7 +92,6 @@ is_logged_in(); ?>
                             "</tr>";
                     }
                     $('#tbl_data').html(html);
-                    $('#mydata').DataTable();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert(xhr.status);
@@ -166,7 +165,6 @@ is_logged_in(); ?>
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        $('#mydata').DataTable().destroy();
                         showData();
                     } else {
                         Swal.fire('Error!', 'Ops! <br>' + data.message, 'error');
@@ -213,7 +211,6 @@ is_logged_in(); ?>
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    $('#mydata').DataTable().destroy();
                     showData();
                 }
             });
