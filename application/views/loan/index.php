@@ -7,12 +7,6 @@
                     <a href="<?= base_url('loan'); ?>" class="btn btn-default btn-sm">
                         <span class="fa fa-refresh"></span> Refresh
                     </a>
-                    <?php if ($this->session->userdata('role') == "admin") {
-                        echo '<button type="button" id="btnTambah" class="btn btn-sm btn-success">
-                            <span class="fa fa-plus"></span> Tambah
-                            </button>';
-                    } ?>
-
                 </div>
             </div>
             <div class="box-body">
@@ -30,7 +24,7 @@
                                     <th class="text-center">Tanggal Kembali</th>
                                     <th class="text-center">Denda</th>
                                     <th class="text-center">Keterangan</th>
-                                    <th class='col-md-2'>Aksi</th>
+                                    <th class='col-md-1'>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tbl_loan">

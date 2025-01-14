@@ -4,16 +4,32 @@ class mLoan extends CI_Model
 {
     public function getLoan()
     {
+        // $this->db->select('*')
+        //     ->from('loan')
+        //     ->join('fine', 'fine.loan_id = loan.loan_id', 'left')
+        //     ->join('book', 'book.book_id = loan.book_id', 'inner')
+        //     ->join('user', 'user.user_id = loan.user_id', 'inner')
+        //     ->order_by("CASE 
+        //                 WHEN status = 'Pending' THEN 0
+        //                 WHEN status = 'Returned' THEN 1
+        //                 WHEN status = 'Canceled' THEN 2
+        //              END", '', false)
+        //     ->order_by('loan_date', 'ASC');
+
+        // $query = $this->db->get();
+
         $this->db->select('*');
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
         $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
         $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left');
+        $this->db->order_by('loan_date', 'ASC');
         $query = $this->db->get();
         return $query->result();
     }
 
-    public function getLoanByUser($user_id) {
+    public function getLoanByUser($user_id)
+    {
         $this->db->select('*');
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
@@ -42,7 +58,8 @@ class mLoan extends CI_Model
         return false;
     }
 
-    public function updateLoan($loan_id, $data) {
+    public function updateLoan($loan_id, $data)
+    {
         $this->db->where('loan_id', $loan_id);
         return $this->db->update('loan', $data);
     }

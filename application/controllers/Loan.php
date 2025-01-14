@@ -98,16 +98,20 @@ class Loan extends CI_Controller
 
     public function cancelLoan()
     {
-        $loan_id = $this->input->post('loan_id');
-        if ($loan_id) {
-            $data = ['status' => 'canceled'];
-            if ($this->mLoan->updateLoan($loan_id, $data)) {
-                $response = array('response' => 'success', 'message' => 'Peminjamanan berhasil dibatalkan...');
+        if ($this->input->is_ajax_request()) {
+            $loan_id = $this->input->post('loan_id');
+            if ($loan_id) {
+                $data = ['status' => 'canceled'];
+                if ($this->mLoan->updateLoan($loan_id, $data)) {
+                    $response = array('response' => 'success', 'message' => 'Peminjamanan berhasil dibatalkan...');
+                } else {
+                    $response = array('response' => 'error', 'message' => 'Peminjaman gagal dibatalkan...');
+                }
             } else {
-                $response = array('response' => 'error', 'message' => 'Peminjaman gagal dibatalkan...');
+                $response = array('response' => 'error', 'message' => 'Peminjaman belum dipilih...');
             }
         } else {
-            $response = array('response' => 'error', 'message' => 'Peminjaman belum dipilih...');
+            $response = array('response' => 'error', 'message' => 'Anda tidak memiliki akses...');
         }
         echo json_encode($response);
     }

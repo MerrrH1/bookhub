@@ -25,7 +25,7 @@ class Book extends CI_Controller
     public function showData()
     {
         $data = $this->mBook->getData();
-        echo json_encode($data);
+        echo json_encode($data, JSON_PRETTY_PRINT);
     }
 
     public function showDataById()
@@ -59,7 +59,6 @@ class Book extends CI_Controller
                     'author' => $this->input->post('author'),
                     'publisher' => $this->input->post('publisher'),
                     'year' => $this->input->post('year'),
-                    'isbn' => $this->input->post('isbn'),
                     'quantity' => $this->input->post('quantity')
                 );
                 $data = $this->security->xss_clean($data);
@@ -78,7 +77,6 @@ class Book extends CI_Controller
         $this->form_validation->set_rules('publisher', 'Penerbit', 'required');
         $this->form_validation->set_rules('category', 'Kategori', 'required');
         $this->form_validation->set_rules('year', 'Tahun Terbit', 'required');
-        $this->form_validation->set_rules('isbn', 'ISBN', 'required');
         $this->form_validation->set_rules('quantity', 'Quantity', 'required');
         $this->form_validation->set_error_delimiters('<p class="text-danger">', '</p>');
 
@@ -92,7 +90,6 @@ class Book extends CI_Controller
                 'author' => $this->input->post('author'),
                 'publisher' => $this->input->post('publisher'),
                 'year' => $this->input->post('year'),
-                'isbn' => $this->input->post('isbn'),
                 'quantity' => $this->input->post('quantity')
             );
             $data = $this->security->xss_clean($data);
@@ -126,7 +123,7 @@ class Book extends CI_Controller
                     'user_id' => $this->session->userdata('user_id'),
                     'book_id' => $book_id,
                     'status' => 'pending',
-                    'loan_date' => NULL,
+                    'loan_date' => date('Y-m-d H:i:s'),
                     'return_date' => NULL
                 );
                 if($this->mLoan->addLoan($data)) {
