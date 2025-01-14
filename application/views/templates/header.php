@@ -49,7 +49,7 @@
                     <a class="nav-link" href="<?= base_url('loan'); ?>">Peminjaman</a>
                     <?php if ($this->session->userdata("role") == "admin") {
                         echo '<a class="nav-link" href="' . base_url('category') . '">Kategori</a>
-                        <a class="nav-link" href="'. base_url('user') .'">Member</a>
+                        <a class="nav-link" href="'. base_url('user') .'">Pengguna</a>
                         <a class="nav-link" href="' . base_url('fine') . '">Denda</a>';
                     } ?>
                 </div>

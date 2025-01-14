@@ -32,6 +32,13 @@ class mBook extends CI_Model {
         $query = $this->db->get('book');
         return $query->num_rows();
     }
+
+    public function getBookQty($book_id) {
+        $this->db->select('quantity');
+        $this->db->where('book_id', $book_id);
+        $query = $this->db->get('book');
+        return $query->row();
+    }
 }
 
 ?>

@@ -9,6 +9,7 @@ class Loan extends CI_Controller
         parent::__construct();
         $this->load->model('mLoan');
         $this->load->model('mFine');
+        $this->load->model('mBook');
         $this->load->library('session');
         $this->load->helper('url');
     }
@@ -36,21 +37,40 @@ class Loan extends CI_Controller
 
     public function confirmLoan()
     {
-        $loan_id = $this->input->post('loan_id');
-        if ($loan_id) {
+        $loan_id = (int) $this->input->post('loan_id');
+        $book_id = (string) $this->input->post('book_id');
+        if ($loan_id && $book_id) {
             $data = [
                 'loan_date' => date('Y-m-d H:i:s'),
                 'status' => 'borrowed'
             ];
-            if ($this->mLoan->updateLoan($loan_id, $data)) {
-                $response = array('response' => 'success', 'message' => 'Peminjamanan berhasil...');
-            } else {
-                $response = array('response' => 'error', 'message' => 'Peminjaman gagal...');
+            try {
+                $this->db->trans_start();
+
+                if ($this->mLoan->updateLoan($loan_id, $data)) {
+                    $currentQty = $this->mBook->getBookQty($book_id);
+                    $newQty = (int) $currentQty->quantity - 1;
+                    $bookData = ['quantity' => $newQty];
+
+                    if ($this->mBook->updateData($book_id, $bookData)) {
+                        $response = ['response' => 'success', 'message' => 'Peminjaman berhasil...'];
+                    } else {
+                        throw new Exception('Gagal memperbarui jumlah buku.');
+                    }
+                } else {
+                    throw new Exception('Gagal mengkonfirmasi peminjaman.');
+                }
+
+                $this->db->trans_complete();
+
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Transaksi gagal.');
+                }
+            } catch (Exception $e) {
+                $response = ['response' => 'error', 'message' => $e->getMessage()];
             }
-        } else {
-            $response = array('response' => 'error', 'message' => 'Peminjaman belum dipilih...');
+            echo json_encode($response);
         }
-        echo json_encode($response);
     }
 
     public function returnBook()
@@ -74,6 +94,13 @@ class Loan extends CI_Controller
 
         $this->db->trans_start();
         if ($this->mLoan->updateLoan($loan_id, $data)) {
+            $book_id = $this->input->post('book_id');
+            $currentQty = $this->mBook->getBookQty($book_id);
+            $newQty = (int) $currentQty->quantity + 1;
+            $bookData = [
+                'quantity' => $newQty
+            ];
+            $this->mBook->updateData($book_id, $bookData);
             if ($interval > 5) {
                 $fineData = [
                     'loan_id' => $loan_id,

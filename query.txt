@@ -17,3 +17,6 @@ INSERT INTO category VALUES (NULL, 'Ilmiah');
 
 INSERT INTO `book` (`book_id`, `title`, `category_id`, `author`, `publisher`, `year`, `quantity`) VALUES (NULL, 'Harry Potter', '2', 'J.K. Rowling', 'Bloomsbury', '1997', '17')
 INSERT INTO `book` (`book_id`, `title`, `category_id`, `author`, `publisher`, `year`, `quantity`) VALUES (NULL, 'Filosofi Kopi', '1', 'Dewi Lestari', 'Bentang Pustaka', '2006', '11')
+INSERT INTO book VALUES (null, 'Bumi Manusia', 1, 'Pramoedya Ananta Toer', 'Gramedia', 1980, 50);
+INSERT INTO book VALUES (null, 'Alice di Negeri Ajaib', 2, 'Lewis Carroll', 'Anak Hebat Indonesia', 1865, 20);
+INSERT INTO book VALUES (null, 'Naruto', 3, 'Masashi Kishimoto', 'Shueisha', 1999, 100);
