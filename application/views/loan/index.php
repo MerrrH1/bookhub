@@ -57,14 +57,14 @@
                         for (i = 0; i < response.length; i++) {
                             no++;
                             html += `
-                                <tr>
+                                <tr class="align-middle">
                                   <td>${no}</td>
                                   <td>${response[i].first_name.charAt(0).toUpperCase() + (response[i].first_name).slice(1) + " " + (response[i].last_name).charAt(0).toUpperCase() + (response[i].last_name).slice(1)}</td>
                                   <td>${response[i].title}</td>
                                   <td>${response[i].loan_date ? new Date(response[i].loan_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td>${response[i].return_date ? new Date(response[i].return_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
-                                  <td>${response[i].fine_amount ? new Intl.NumberFormat("id-ID", {style: 'currency', currency: 'IDR', minimumFractionDigits: 0}).format(response[i].fine_amount) : ""}</td>
-                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}</td>
+                                  <td style="color: ${response[i].fine_status == 0 ? '#ff0000' : '#000000'}">${response[i].fine_amount ? new Intl.NumberFormat("id-ID", { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(response[i].fine_amount) : ""}</td>
+                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].return_date ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
                                   <td>${response[i].status === "pending" ? `<button class="btn btn-primary btn_konfirmasi" data-id="${response[i].loan_id}">Konfirmasi</button>` : response[i].status === "borrowed" ? `<button class='btn btn-primary btn_kembali' loan-date='${response[i].loan_date}' data-id='${response[i].loan_id}'>Kembalikan Buku</button>` : ""}</td>
                                 </tr>`;
                         }
@@ -72,14 +72,14 @@
                         for (i = 0; i < response.length; i++) {
                             no++;
                             html += `
-                                <tr>
+                                <tr class="align-middle">
                                   <td>${no}</td>
                                   <td>${response[i].title}</td>
                                   <td>${response[i].loan_date ? new Date(response[i].loan_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td>${response[i].return_date ? new Date(response[i].return_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
-                                  <td>${response[i].fine_amount ? Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', minimumFractionDigits: 0}).format(response[i].fine_amount) : ""}</td>
-                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}</td>
-                                  <td>${response[i].status === "pending" ? `<button class="btn btn-danger btn_batal" data-id="${response[i].loan_id}">Batal</button>` : response[i].status === "borrowed" ? `<button class='btn btn-primary btn_kembali' data-id='${response[i].loan_id}'>Kembalikan Buku</button>` : ""}</td>
+                                  <td style="color: ${response[i].fine_status == 0 ? '#ff0000' : '#000000'}">${response[i].fine_amount ? Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(response[i].fine_amount) : ""}</td>
+                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].return_date ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
+                                  <td>${response[i].status === "pending" ? `<button class="btn btn-danger btn_batal" data-id="${response[i].loan_id}">Batal</button>` : response[i].status === "borrowed" ? `<button class='btn btn-primary btn_kembali' loan-date='${response[i].loan_date}' data-id='${response[i].loan_id}'>Kembalikan Buku</button>` : ""}</td>
                                 </tr>`;
 
                         }
@@ -92,9 +92,11 @@
         $(document).on('click', '.btn_konfirmasi', function (e) {
             e.preventDefault();
             var loan_id = $(this).attr('data-id');
+            var user_id = $('#user_id').val();
+            console.log(loan_id);
             $.ajax({
                 url: '<?= base_url('loan/confirmLoan') ?>',
-                data: { loan_id: loan_id },
+                data: { loan_id: loan_id, user_id: user_id },
                 dataType: 'JSON',
                 type: 'POST',
                 success: function (response) {
@@ -119,6 +121,7 @@
         $(document).on('click', '.btn_kembali', function () {
             var loan_id = $(this).attr('data-id');
             var loan_date = $(this).attr('loan-date');
+            console.log(`${loan_id} ${loan_date}`);
             $.ajax({
                 url: '<?= base_url('loan/returnBook') ?>',
                 type: 'POST',
@@ -127,7 +130,7 @@
                     loan_id: loan_id,
                     loan_date: loan_date
                 },
-                success: function (response) { 
+                success: function (response) {
                     Swal.fire({
                         icon: response.response,
                         title: response.message

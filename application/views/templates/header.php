@@ -19,6 +19,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
     <script src="<?= base_url('assets/js/bootstrap.js'); ?>"></script>
     <title><?= $title; ?></title>
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #333;
+        }
+
+        p, span, li {
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,7 +49,7 @@
                     <a class="nav-link" href="<?= base_url('loan'); ?>">Peminjaman</a>
                     <?php if ($this->session->userdata("role") == "admin") {
                         echo '<a class="nav-link" href="' . base_url('category') . '">Kategori</a>
-                        <a class="nav-link" href="#">Member</a>
+                        <a class="nav-link" href="'. base_url('user') .'">Member</a>
                         <a class="nav-link" href="' . base_url('fine') . '">Denda</a>';
                     } ?>
                 </div>

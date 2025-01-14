@@ -8,6 +8,10 @@ class mUser extends CI_Model {
         return $this->db->get()->result();
     }
 
+    public function getAllUser() {
+        return $this->db->get('user')->result();
+    }
+
     public function get_user($username) {
         $this->db->where('username', $username);
         return $this->db->get('user')->row();

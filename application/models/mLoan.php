@@ -4,25 +4,11 @@ class mLoan extends CI_Model
 {
     public function getLoan()
     {
-        // $this->db->select('*')
-        //     ->from('loan')
-        //     ->join('fine', 'fine.loan_id = loan.loan_id', 'left')
-        //     ->join('book', 'book.book_id = loan.book_id', 'inner')
-        //     ->join('user', 'user.user_id = loan.user_id', 'inner')
-        //     ->order_by("CASE 
-        //                 WHEN status = 'Pending' THEN 0
-        //                 WHEN status = 'Returned' THEN 1
-        //                 WHEN status = 'Canceled' THEN 2
-        //              END", '', false)
-        //     ->order_by('loan_date', 'ASC');
-
-        // $query = $this->db->get();
-
-        $this->db->select('*');
+        $this->db->select('loan.*, book.title, user.username, user.first_name, user.last_name, fine.fine_amount, fine.fine_status');
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
         $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
-        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left');
+        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left outer');
         $this->db->order_by('loan_date', 'ASC');
         $query = $this->db->get();
         return $query->result();
@@ -30,14 +16,15 @@ class mLoan extends CI_Model
 
     public function getLoanByUser($user_id)
     {
-        $this->db->select('*');
+        $this->db->select('loan.*, book.title, user.username, fine.fine_amount, fine.fine_status');
         $this->db->from('loan');
         $this->db->join('book', 'book.book_id = loan.book_id', 'inner');
         $this->db->join('user', 'user.user_id = loan.user_id', 'inner');
-        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left');
-        $this->db->where('loan.user_id', $user_id);
+        $this->db->join('fine', 'fine.loan_id = loan.loan_id', 'left outer');
+        $this->db->where('user.user_id', $user_id);
         $query = $this->db->get();
         return $query->result();
+
     }
 
     public function addLoan($data)
