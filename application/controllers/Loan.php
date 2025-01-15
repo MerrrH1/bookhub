@@ -10,8 +10,6 @@ class Loan extends CI_Controller
         $this->load->model('mLoan');
         $this->load->model('mFine');
         $this->load->model('mBook');
-        $this->load->library('session');
-        $this->load->helper('url');
     }
 
     public function index()
@@ -75,54 +73,61 @@ class Loan extends CI_Controller
 
     public function returnBook()
     {
-        $loan_id = (int) $this->input->post('loan_id');
-        $loan_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->input->post('loan_date'));
+        if ($this->input->is_ajax_request()) {
+            $loan_id = (int) $this->input->post('loan_id');
+            $loan_date = DateTime::createFromFormat('Y-m-d H:i:s', $this->input->post('loan_date'));
 
-        if (!$loan_id || !$loan_date) {
-            $response = array('response' => 'error', 'message' => 'Peminjaman belum dipilih...');
-            echo json_encode($response);
-            return;
-        }
-
-        $return_date = new DateTime();
-        $interval = $loan_date->diff($return_date)->days;
-
-        $data = [
-            'return_date' => date('Y-m-d H:i:s'),
-            'status' => 'returned'
-        ];
-
-        $this->db->trans_start();
-        if ($this->mLoan->updateLoan($loan_id, $data)) {
-            $book_id = $this->input->post('book_id');
-            $currentQty = $this->mBook->getBookQty($book_id);
-            $newQty = (int) $currentQty->quantity + 1;
-            $bookData = [
-                'quantity' => $newQty
-            ];
-            $this->mBook->updateData($book_id, $bookData);
-            if ($interval > 5) {
-                $fineData = [
-                    'loan_id' => $loan_id,
-                    'fine_amount' => ($interval - 5) * 5000,
-                    'fine_status' => 0
-                ];
-                if (!$this->mFine->addFine($fineData)) {
-                    $this->db->trans_rollback();
-                    $response = array('response' => 'error', 'message' => 'Terjadi kesalahan saat menambahkan denda.');
-                    echo json_encode($response);
-                    return;
-                }
+            if (!$loan_id || !$loan_date) {
+                $response = array('response' => 'error', 'message' => 'Peminjaman belum dipilih...');
+                echo json_encode($response);
+                return;
             }
-            $this->db->trans_complete();
-            if ($this->db->trans_status() === FALSE) {
-                $response = array('response' => 'error', 'message' => 'Transaksi gagal, silakan coba lagi.');
+
+            $return_date = new DateTime();
+            $interval = $loan_date->diff($return_date)->days;
+
+            $data = [
+                'return_date' => date('Y-m-d H:i:s'),
+                'status' => 'returned'
+            ];
+
+            $this->db->trans_start();
+            if ($this->mLoan->updateLoan($loan_id, $data)) {
+                $book_id = $this->input->post('book_id');
+                $currentQty = $this->mBook->getBookQty($book_id);
+                // if($currentQty = 0 ) {
+
+                // }
+                $newQty = (int) $currentQty->quantity + 1;
+                $bookData = [
+                    'quantity' => $newQty
+                ];
+                $this->mBook->updateData($book_id, $bookData);
+                if ($interval > 5) {
+                    $fineData = [
+                        'loan_id' => $loan_id,
+                        'fine_amount' => ($interval - 5) * 5000,
+                        'fine_status' => 0
+                    ];
+                    if (!$this->mFine->addFine($fineData)) {
+                        $this->db->trans_rollback();
+                        $response = array('response' => 'error', 'message' => 'Terjadi kesalahan saat menambahkan denda.');
+                        echo json_encode($response);
+                        return;
+                    }
+                }
+                $this->db->trans_complete();
+                if ($this->db->trans_status() === FALSE) {
+                    $response = array('response' => 'error', 'message' => 'Transaksi gagal, silakan coba lagi.');
+                } else {
+                    $response = array('response' => 'success', 'message' => $interval > 5 ? 'Buku berhasil dikembalikan dengan denda...' : 'Buku berhasil dikembalikan...');
+                }
             } else {
-                $response = array('response' => 'success', 'message' => $interval > 5 ? 'Buku berhasil dikembalikan dengan denda...' : 'Buku berhasil dikembalikan...');
+                $this->db->trans_rollback();
+                $response = array('response' => 'error', 'message' => 'Gagal mengembalikan buku.');
             }
         } else {
-            $this->db->trans_rollback();
-            $response = array('response' => 'error', 'message' => 'Gagal mengembalikan buku.');
+            $response = array('response' => 'error', 'message' => 'Anda tidak memiliki akses...');
         }
         echo json_encode($response);
     }

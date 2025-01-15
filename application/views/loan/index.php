@@ -64,7 +64,7 @@
                                   <td>${response[i].loan_date ? new Date(response[i].loan_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td>${response[i].return_date ? new Date(response[i].return_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td style="color: ${response[i].fine_status == 0 ? '#ff0000' : '#000000'}">${response[i].fine_amount ? new Intl.NumberFormat("id-ID", { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(response[i].fine_amount) : ""}</td>
-                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].return_date ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
+                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].fine_amount ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
                                   <td>${response[i].status === "pending" ? `<button class="btn btn-primary btn_konfirmasi" book-id="${response[i].book_id}" data-id="${response[i].loan_id}">Konfirmasi</button>` : response[i].status === "borrowed" ? `<button class='btn btn-primary btn_kembali' book-id="${response[i].book_id}" loan-date='${response[i].loan_date}' data-id='${response[i].loan_id}'>Kembalikan Buku</button>` : ""}</td>
                                 </tr>`;
                         }
@@ -78,7 +78,7 @@
                                   <td>${response[i].loan_date ? new Date(response[i].loan_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td>${response[i].return_date ? new Date(response[i].return_date).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" }) : ""}</td>
                                   <td style="color: ${response[i].fine_status == 0 ? '#ff0000' : '#000000'}">${response[i].fine_amount ? Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(response[i].fine_amount) : ""}</td>
-                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].return_date ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
+                                  <td>${response[i].status.charAt(0).toUpperCase() + response[i].status.slice(1)}${response[i].fine_amount ? response[i].fine_status == 0 ? '<br><span style="color: red">Belum Bayar Denda</span>' : '<br><span style="color: green">Sudah Bayar Denda</span>' : ""}</td>
                                   <td>${response[i].status === "pending" ? `<button class="btn btn-danger btn_batal" data-id="${response[i].loan_id}">Batal</button>` : ""}</td>
                                 </tr>`;
 

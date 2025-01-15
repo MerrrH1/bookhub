@@ -131,7 +131,9 @@
                                     <div class="btn-group" role="group"><form method="post"><input type="hidden" name="book_id" id="book_id" value="${item.book_id}"></form>`;
 
                         if (role == "member") {
-                            html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" stok=${item.quantity} data-id="${item.book_id}">Pinjam Buku</button>`;
+                            if (response[i].quantity > 0) {
+                                html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" stok=${item.quantity} data-id="${item.book_id}">Pinjam Buku</button>`;
+                            }
                         } else if (role == 'admin') {
                             html += `
                             <button type="button" class="btn btn-sm btn-primary btn_edit" edit-id="${item.book_id}">Edit</button>
