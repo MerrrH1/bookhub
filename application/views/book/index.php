@@ -1,4 +1,25 @@
 <div class="col-md-12">
+    <?php
+    if ($this->session->userdata('books')) {
+        ?>
+        <div class="row">
+            <h3 class="box-title"><i class="fa fa-th my-2"></i> Daftar Buku yang Dipilih</h3>
+            <div class="col-md-12">
+                <table class="table table-bordered table-condensed text-center" id="mydata">
+                    <thead>
+                        <tr>
+                            <th class="text-center">#No</th>
+                            <th class="text-center">Judul Buku</th>
+                        </tr>
+                    </thead>
+                    <tbody class="g-4 mt-2" id="tbl_loan">
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-warning float-end">Pinjam Buku</button>
+            </div>
+        </div>
+    <?php } ?>
+    <hr>
     <div class="row">
         <div class="box box-danger">
             <div class="box-header with-border color-header">
@@ -93,7 +114,8 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary " id="btnSimpan"
-                    data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing ">Simpan Data</button>
+                    data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Processing ">Simpan
+                    Data</button>
             </div>
         </div>
     </div>
@@ -102,6 +124,11 @@
     $(document).ready(function () {
         var editMode = false;
         showData();
+        <?php
+        if ($this->session->userdata('books')) {
+            echo "showTempBook();";
+        }
+        ?>
 
         function showData() {
             var role = $('#role').val();
@@ -132,7 +159,8 @@
 
                         if (role == "member") {
                             if (response[i].quantity > 0) {
-                                html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" stok=${item.quantity} data-id="${item.book_id}">Pinjam Buku</button>`;
+                                html += `<button type="button" class="btn btn-sm btn-primary btn_pilih" stok=${item.quantity} data-id="${item.book_id}">Pilih Buku</button>`;
+                                // html += `<button type="button" class="btn btn-sm btn-primary btn_pinjam" stok=${item.quantity} data-id="${item.book_id}">Pinjam Buku</button>`;
                             }
                         } else if (role == 'admin') {
                             html += `
@@ -152,6 +180,28 @@
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert(xhr.status);
                     alert(thrownError);
+                }
+            });
+        }
+
+        function showTempBook() {
+            $.ajax({
+                url: '<?= base_url('book/showTempBook'); ?>',
+                type: 'GET',
+                dataType: 'JSON',
+                success: function (response) {
+                    var i;
+                    var no = 0;
+                    var html = "";
+                    for (i = 0; i < response.length; i++) {
+                        no++;
+                        html += `
+                                <tr class="align-middle">
+                                  <td>${no}</td>
+                                  <td>${response[i].title}</td>
+                                </tr>`;
+                    }
+                    $('#tbl_loan').html(html);
                 }
             });
         }
@@ -308,6 +358,39 @@
                 }
             });
         });
+
+        $(document).on('click', '.btn_pilih', function (e) {
+            e.preventDefault();
+            var book_id = $(this).attr('data-id');
+            console.log(book_id);
+            $.ajax({
+                url: '<?= base_url('book/addTempBook') ?>',
+                type: 'POST',
+                data: { book_id: book_id },
+                dataType: 'JSON',
+                success: function (response) {
+                    if (response.response == "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            text: response.misc
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan',
+                        text: thrownError
+                    });
+                }
+            })
+        })
 
     });
 

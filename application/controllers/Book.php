@@ -113,23 +113,52 @@ class Book extends CI_Controller
         }
     }
 
-    public function pinjamBuku() {
-        if($this->input->is_ajax_request()) {
+    public function pinjamBuku()
+    {
+        if ($this->input->is_ajax_request()) {
             $book_id = $this->input->post('book_id');
-            if(!$book_id) {
+            if (!$book_id) {
                 $response = array('response' => 'error', 'message' => 'Buku belum dipilih...');
             } else {
                 $data = array(
                     'user_id' => $this->session->userdata('user_id'),
                     'book_id' => $book_id,
                     'status' => 'pending',
-                    'loan_date' => date('Y-m-d H:i:s'),
+                    'loan_date' => NULL,
                     'return_date' => NULL
                 );
-                if($this->mLoan->addLoan($data)) {
+                if ($this->mLoan->addLoan($data)) {
                     $response = array('response' => 'success', 'message' => 'Buku berhasil dipinjam', 'misc' => 'Sedang menunggu konfirmasi...');
                 } else {
                     $response = array('response' => 'error', 'message' => 'Buku gagal dipinjam...');
+                }
+            }
+        } else {
+            $response = array('response' => 'error', 'message' => 'Anda tidak memiliki akses...');
+        }
+        echo json_encode($response);
+    }
+
+    public function showTempBook() {
+        $data = $this->session->userdata('books');
+        echo json_encode($data);
+    }
+
+    public function addTempBook()
+    {
+        if ($this->input->is_ajax_request()) {
+            $book_id = $this->input->post('book_id');
+            $books = $this->session->userdata('books');
+            $book_title = $this->mBook->getBookById($book_id)->title;
+            if (!$book_id) {
+                $response = array('response' => 'error', 'message' => 'Anda belum memilih buku...');
+            } else {
+                if (!in_array($book_id, $books)) {
+                    array_push($books, array('id' => $book_id, 'title' => $book_title));
+                    $this->session->set_userdata('books', $books);
+                    $response = array('response' => 'success', 'message' => 'Buku berhasil dipilih...');
+                } else {
+                    $response = array('response' => 'error', 'message' => 'Buku sudah dipilih...');
                 }
             }
         } else {

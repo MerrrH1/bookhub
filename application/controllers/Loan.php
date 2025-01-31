@@ -95,9 +95,6 @@ class Loan extends CI_Controller
             if ($this->mLoan->updateLoan($loan_id, $data)) {
                 $book_id = $this->input->post('book_id');
                 $currentQty = $this->mBook->getBookQty($book_id);
-                // if($currentQty = 0 ) {
-
-                // }
                 $newQty = (int) $currentQty->quantity + 1;
                 $bookData = [
                     'quantity' => $newQty
